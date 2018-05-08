@@ -315,31 +315,28 @@ module.exports.contains = contains;
  * 
  * every: designed to return true if all the values are in the collection; if not false
  * 
- * NOT DONE YET
+ * 
  * @param {collection}: the collection that is being tested with the values in it
  * @param {function}: the function that is actually performing the testing;
  * 
  */
  function every(collection, func){
-    if (Array.isArray(collection)) {
-        for (var i = 0; i < collection.length; i++) {
-            var element = collection[i];
-            if(func(element, i, collection) || i === collection.length-1) {
-                return true;
-            } else if (i !== collection.length-1) {
-                return false;
-            }
-        }
-        //objects
-    } else if (typeof collection === 'object') {
-        for (var key in collection) {
-            var value = collection[key];
-            if(func(value, key, collection) && key !== collection.length-1) {
-                return true;
-            } else if (key === collection.length-1) {
-                return false;
-            }
-        }
+    if(func){
+        var isFalse = true;
+        each(collection, function(element, loc, collection) {
+            if (!func(element, loc, collection)) {
+                isFalse = false;
+           }
+        });
+        return isFalse;
+    } else{
+        isFalse = true;
+        each(collection, function(element, loc, collection) {
+           if (!element) {
+                isFalse = false;
+           }
+        });
+        return isFalse;
     }
 }
 
@@ -351,31 +348,29 @@ module.exports.every = every;
  * 
  * @param {collection}: the collection that is being tested with the values in it
  * @param {function}:the function that is actually performing the testing;
- * NOT DONE YET
+ * 
  * 
  * 
  * 
  */
  function some(collection, func){
-  if (Array.isArray(collection)) {
-        for (var i = 0; i < collection.length; i++) {
-            var element = collection[i];
-            if(func(element, i, collection) && i !== collection.length-1) {
-                return true;
-            } else if (i === collection.length-1) {
-                return false;
+  if (func) {
+        var isTrue = false;
+        each(collection, function(element, loc, col) {
+            if (func(element, loc, col)) {
+                isTrue = true;
             }
-        }
-        //objects
-    } else if (typeof collection === 'object') {
-        for (var key in collection) {
-            var value = collection[key];
-            if(func(value, key, collection) && key !== collection.length-1) {
-                return true;
-            } else if (key === collection.length-1) {
-                return false;
+        });
+        return isTrue;
+    } else {
+        
+        isTrue = false;
+        each(collection, function(element, loc, col) {
+            if (element) {
+                isTrue = true;
             }
-        }
+        });
+        return isTrue;
     }
 }
 
@@ -385,15 +380,28 @@ module.exports.some = some;
  * 
  * reduce: designed to reduce a list of values into a single one
  * 
- * NOT DONE YET
+ * 
  * @param {array}: the collection of values that will be reduced;
  * @param {function}: the function that actually performs the reducing;
- * @param {seed}: is used to test;
+ * @param {seed}: is used to test with
  * 
  */
  function reduce(array, func, seed) {
-
+if (typeof seed === 'undefined') {
+        var prevRes = array[0]/10;
+    } else {
+        prevRes = seed;
+    }
+    for (var i = 0; i < array.length; i++) {
+        var element = array[i];
+        var result = func(prevRes, element, i);
+        if (i !== array.length-1) {
+            prevRes = result;
+        }
+    }
+    return result;
 }
+
 
 module.exports.reduce = reduce;
 
